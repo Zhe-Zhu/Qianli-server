@@ -5,5 +5,5 @@ Qianli-server
 
 #开放API
 
-.`/users/register/`
-供用户注册用
+*`/users/register/`
+*供用*户注册用
