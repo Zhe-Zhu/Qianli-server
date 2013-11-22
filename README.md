@@ -6,6 +6,3 @@ Qianli-server
 
 Add for Pull Test
 
-merge
-
-test revert
