@@ -312,6 +312,7 @@ class QLUserWhoIsActiveByPhoneNumber(APIView):
         for phone_number in phone_number_list:
             if self.isActive(phone_number):
                 return_phone_number.append(phone_number)
+        return_phone_number = list(set(return_phone_number))
         return Response(return_phone_number)
 
     def isActive(self, phone_number):
