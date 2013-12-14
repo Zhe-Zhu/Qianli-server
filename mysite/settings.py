@@ -134,7 +134,8 @@ INSTALLED_APPS = (
     'captcha',
     'dialrecords',
     'notification',
-    'qlfriend'
+    'qlfriend',
+    'widget'
 )
 
 # A sample logging configuration. The only tangible logging

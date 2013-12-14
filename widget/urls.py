@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from widget import views
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -14,12 +15,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^users/', include('qluser.urls')),
-    url(r'^pictures/', include('qlpicture.urls')),
-    url(r'^captcha/', include('captcha.urls')),
-    url(r'^dialrecords/', include('dialrecords.urls')),
-    url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
-    url(r'^notification/', include('notification.urls')),
-    url(r'^friend/', include('qlfriend.urls')),
-    url(r'^widget/', include('widget.urls'))
+                      url(r'^email/$', views.StoreBetaUserEmail.as_view()),
+                      url(r'^(?i)emailGet/$', views.store_email_by_get)
 )
