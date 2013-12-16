@@ -15,18 +15,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 def sendMailBy163(beta_user_email):
-    sender = 'paladin88@163.com'
-    receiver = 'theashstudio@gmail.com'
+    sender = 'ghost@qianliapp.cn'
+    receiver = 'beta@qianliapp.cn'
     subject = '申请加入千里内测'
-    smtpserver = 'smtp.163.com'
-    username = 'paladin88'
-    password = 'zz88261025'
+    smtpserver = 'smtp.ym.163.com'
+    username = 'ghost@qianliapp.cn'
+    password = '5xmQGVwLec'
 
     msg = MIMEText(beta_user_email,'plain','utf-8')#中文需参数‘utf-8’，单字节字符不需要
     msg['Subject'] = Header(subject, 'utf-8')
 
     smtp = smtplib.SMTP()
-    smtp.connect('smtp.163.com')
+    smtp.connect(smtpserver)
     smtp.login(username, password)
     smtp.sendmail(sender, receiver, msg.as_string())
     smtp.quit()
