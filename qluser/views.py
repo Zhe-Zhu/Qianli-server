@@ -92,7 +92,7 @@ class RegisterBeforeVerify(generics.CreateAPIView):
             phone_number = request.DATA['phone_number']
             udid = request.DATA['udid']
         except KeyError:
-            return Response({"message": "KeyError happened. udid:%s - phone_number:%s" % (udid, phone_number)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": -1}, status=status.HTTP_400_BAD_REQUEST)
         try:
             old_user = QLUser.objects.get(phone_number=phone_number, udid=udid)
         except ObjectDoesNotExist:

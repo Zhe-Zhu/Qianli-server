@@ -54,8 +54,9 @@ import logging
 #     return HttpResponse(html)
 
 def run_twisted():
-    if len(os.popen("netstat -nltp | grep 7077").readlines()) < 1:
+    if len(os.popen("netstat -nltp | grep 7077").readlines()) < 1 or len(os.popen("pgrep twistd").readlines()) < 1:
         os.system("twistd -r epoll web --class=pyapns.server.APNSServer --port=7077")
+
 
 def send_notification(token, aps):
     """

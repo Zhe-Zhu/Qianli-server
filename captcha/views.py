@@ -14,6 +14,7 @@ import random
 import datetime
 import urllib2
 import hashlib
+import requests
 
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
@@ -37,6 +38,15 @@ def sendCaptcha(country_code, phone_number, captcha):
     else:
         #TODO 支持国际短信平台发送
         sendCaptchaOnBayou(phone_number, captcha)
+
+def sendCaptchaOnLuosimao(phone_number, captcha):
+    resp = requests.post(("https://sms-api.luosimao.com/v1/send.json"),
+    auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
+    data={
+        "mobile": phone_number,
+        "message": ''.join([captcha, "[千里验证码]"])
+    },timeout=3 , verify=False);
+    result =  json.loads( resp.content )
 
 def sendCaptchaOnBayou(phone_number, captcha):
     # 发送验证码
@@ -123,7 +133,7 @@ class generateCaptcha(APIView):
     def post(self, request, format=None):
         phone_number = request.DATA['phone_number']
         country_code = request.DATA['country_code']
-        return self.sendCaptchaAndUpdateDB(phone_number, country_code)
+        return sendCaptchaAndUpdateDB(phone_number, country_code)
         # try:
         #     phone_captcha = Captcha.objects.get(country_code=country_code,
         #         phone_number=phone_number)
