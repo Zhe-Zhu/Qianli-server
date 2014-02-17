@@ -135,7 +135,8 @@ INSTALLED_APPS = (
     'dialrecords',
     'notification',
     'qlfriend',
-    'widget'
+    'widget',
+    'waitinglist',
 )
 
 # A sample logging configuration. The only tangible logging

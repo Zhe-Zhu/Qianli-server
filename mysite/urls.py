@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token'),
     url(r'^notification/', include('notification.urls')),
     url(r'^friend/', include('qlfriend.urls')),
-    url(r'^widget/', include('widget.urls'))
+    url(r'^widget/', include('widget.urls')),
+    url(r'^waitinglist/', include('waitinglist.urls'))
 )
