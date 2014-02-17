@@ -10,7 +10,7 @@ import datetime
 def checkWaitingStatus(request, number):
     print 'Number: "%s"' % number
     response_data = {}
-    #Waitedlist.objects.all().delete()
+    
     try:
         user = Waitedlist.objects.get(number = number)
     except Waitedlist.DoesNotExist:
@@ -41,7 +41,7 @@ def checkWaitingStatus(request, number):
             user.delete()
             response_data['result'] = 1
             response_data['num'] = number
-            # add number to offical user list
+            #TODO: add number to official user list
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
             response_data['result'] = 2
@@ -55,9 +55,8 @@ def addPartner(request, number, partner):
     try:
         user = Waitinglist.objects.get(number = number)
     except Waitinglist.DoesNotExist:
-        #just for debug
+        #TODO: delete just for debug
         user = Waitinglist(number = number, partner = partner)
-        #user = Waitinglist(number = number,regtime = datetime.datetime.now())
         user.save()
         response_data['result'] = -1
         response_data['partner'] = partner
@@ -76,6 +75,7 @@ def addPartner(request, number, partner):
             response_data['result'] = 0
             response_data['partner'] = partner
             return HttpResponse(json.dumps(response_data), content_type="application/json")
+        #TODO: check whether in the official user list
         
         if user.partner == "":
             user.partner = partner
@@ -85,6 +85,7 @@ def addPartner(request, number, partner):
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
             if user.partner_verified:
+                # can not change the partner if your partner is already in our system
                 response_data['result'] = 3
                 response_data['partner'] = partner
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
