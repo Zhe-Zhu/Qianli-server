@@ -43,13 +43,13 @@ def checkWaitingStatus(request, number):
             response_data['num'] = number
             # add number to offical user list
             return HttpResponse(json.dumps(response_data), content_type="application/json")
-    else:
-        response_data['result'] = 2
-        response_data['num'] = number
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        else:
+            response_data['result'] = 2
+            response_data['num'] = number
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
-def addPartner(request, number,partner):
+def addPartner(request, number, partner):
     # result = -1 indicates internal error, 0:parnter already in our system, 1:first time set partner, 2:changed partner, 3:can not change parnter because invited partner already in our system.
     response_data = {}
     try:
@@ -125,5 +125,3 @@ def moveInUser(request, password, number):
     else:
         response_data['result'] = 0
         return HttpResponse(json.dumps(response_data), content_type="application/json")
-
-                118,1-8       91%
