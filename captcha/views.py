@@ -15,6 +15,8 @@ import datetime
 import urllib2
 import hashlib
 import requests
+import base64
+import json
 
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
@@ -38,6 +40,33 @@ def sendCaptcha(country_code, phone_number, captcha):
     else:
         #TODO 支持国际短信平台发送
         sendCaptchaOnBayou(phone_number, captcha)
+
+def sendCaptchaByVoice(phone_number, captcha):
+    now = datetime.datetime.now()
+    timeStamp = now.strftime("%Y%m%d%H%M%S")
+
+    baseUrl = "https://sandboxapp.cloopen.com:8883/"
+    appId = "aaf98fda44200b8f0144360d5d2909fb"
+    accountSid = "ff8080813f091d74013f09f901990015"
+    authToken = "8149dad772e244578a4c363cd9289f68"
+    softVersion = "2013-12-26"
+    verifyCode = captcha
+    to = phone_number
+    playTimes = "3"
+
+    sig = hashlib.md5(accountSid+authToken+timeStamp).hexdigest().upper()
+    auth = base64.b64encode(accountSid+':'+timeStamp)
+
+    url = baseUrl+softVersion+"/Accounts/"+accountSid+"/Calls/VoiceVerify?sig="+sig
+
+    headers = {'Accept': 'application/json', 
+    'Content-Type': 'application/json;charset=utf-8',
+    'content-length':'256', 'Authorization':auth}
+
+    payload = {"appId":appId, "verifyCode":verifyCode, "playTimes":playTimes, "to":to}
+
+    r = requests.post(url, data=json.dumps(payload), headers=headers, verify=False)
+
 
 def sendCaptchaOnLuosimao(phone_number, captcha):
     resp = requests.post(("https://sms-api.luosimao.com/v1/send.json"),
