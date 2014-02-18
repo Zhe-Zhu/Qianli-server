@@ -7,8 +7,10 @@ from waitinglist.models import Waitedlist
 from qluser.models import QLUser, QLUserInformationUpdate
 import time
 import datetime
+import MySQLdb
+import hashlib
 
-def insert_into_user_information_update(self, phone_number):
+def insert_into_user_information_update(phone_number):
     old_user_information = None
     try:
         old_user_information = QLUserInformationUpdate.objects.get(phone_number=phone_number)
@@ -17,6 +19,32 @@ def insert_into_user_information_update(self, phone_number):
     if old_user_information is not None:
         old_user_information.delete()
     QLUserInformationUpdate.objects.create(phone_number=phone_number, update_time=0)
+
+
+def register_sip_server(udid, phone_number):
+    db = MySQLdb.connect(host="localhost",
+                         user="openser",
+                         passwd="openserrw",
+                         db="openser")
+    cur = db.cursor()
+    realm = "qianli"
+    password = phone_number
+    email = ""
+    m = hashlib.md5(udid + ':' + realm + ':' + password)
+    ha1 = m.hexdigest()
+    m = hashlib.md5(
+        udid + '@112.124.36.134' + ':' + realm + ':' + password)
+    ha1b = m.hexdigest()
+    # 删除掉旧的记录
+    number_row = cur.execute("DELETE FROM subscriber WHERE username="+"'"+phone_number+"'")
+    number_row = cur.execute("INSERT INTO subscriber (username, domain, password, ha1, ha1b, email_address) VALUES (" +
+                             "'" + phone_number + "','" + "112.124.36.134" +"','" + password + "','" + ha1 + "','" + ha1b + "','" + email + "')" + "ON DUPLICATE KEY UPDATE domain=VALUES(domain), password=VALUES(password), ha1=VALUES(ha1), ha1b=VALUES(ha1b), email_address=VALUES(email_address)")
+    # TODO:需要检测是否执行成功
+    if number_row != 1:
+        pass  # TODO: do something here
+    db.commit()
+    cur.close()
+    db.close()
 
 
 def checkWaitingStatus(request, number):
@@ -50,6 +78,7 @@ def checkWaitingStatus(request, number):
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         if user.verified:
+            udid = user.udid
             user.delete()
             response_data['result'] = 1
             response_data['num'] = number
@@ -66,6 +95,7 @@ def checkWaitingStatus(request, number):
             except ObjectDoesNotExist:
                 pass
             QLUser.objects.create(udid=udid, phone_number=number)
+            register_sip_server(udid, phone_number)
             insert_into_user_information_update(number)         
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
