@@ -34,12 +34,12 @@ def getCaptcha():
 def sendCaptcha(country_code, phone_number, captcha):
     # 根据不同的国家代码选择不同短信平台
     if country_code in ["0086", "+86", "86"]:
-        sendCaptchaOnBayou(phone_number, captcha)
+        sendCaptchaOnLuosimao(phone_number, captcha)
     elif country_code == "test":
         sendCaptchaForTest(phone_number, captcha)
     else:
         #TODO 支持国际短信平台发送
-        sendCaptchaOnBayou(phone_number, captcha)
+        sendCaptchaOnLuosimao(phone_number, captcha)
 
 def sendCaptchaByVoice(phone_number, captcha):
     now = datetime.datetime.now()
