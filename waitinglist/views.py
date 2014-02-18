@@ -4,8 +4,20 @@ from django.http import HttpResponse
 import json
 from waitinglist.models import Waitinglist
 from waitinglist.models import Waitedlist
+from qluser.models import QLUser, QLUserInformationUpdate
 import time
 import datetime
+
+def insert_into_user_information_update(self, phone_number):
+    old_user_information = None
+    try:
+        old_user_information = QLUserInformationUpdate.objects.get(phone_number=phone_number)
+    except ObjectDoesNotExist:
+        pass
+    if old_user_information is not None:
+        old_user_information.delete()
+    QLUserInformationUpdate.objects.create(phone_number=phone_number, update_time=0)
+
 
 def checkWaitingStatus(request, number):
     print 'Number: "%s"' % number
@@ -42,6 +54,19 @@ def checkWaitingStatus(request, number):
             response_data['result'] = 1
             response_data['num'] = number
             #TODO: add number to official user list
+            # 验证成功将用户记录插入数据库
+            try:
+                # 清理旧记录
+                QLUser.objects.get(phone_number=number).delete()
+            except ObjectDoesNotExist:
+                pass
+            try:
+                # 必须分开清理,否则如果出现异常则不执行下面一条了
+                QLUser.objects.get(udid=udid).delete()
+            except ObjectDoesNotExist:
+                pass
+            QLUser.objects.create(udid=udid, phone_number=number)
+            insert_into_user_information_update(number)         
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
             response_data['result'] = 2
@@ -75,7 +100,10 @@ def addPartner(request, number, partner):
             response_data['result'] = 0
             response_data['partner'] = partner
             return HttpResponse(json.dumps(response_data), content_type="application/json")
-        #TODO: check whether in the official user list
+        if QLUser.objects.filter(phone_number=partner).exists():
+            response_data['result'] = 0
+            response_data['partner'] = partner
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
         
         if user.partner == "":
             user.partner = partner

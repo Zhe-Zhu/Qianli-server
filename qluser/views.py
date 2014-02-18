@@ -3,6 +3,7 @@
 
 from qluser.models import QLUser, QLUserInformationUpdate
 from qluser.serializers import QLUserSerializer, QLUserSerializerAfterRegister, QLUserInformationUpdateSerializer
+from waitinglist.models import Waitinglist, Waitedlist
 from captcha.views import sendCaptchaAndUpdateDB, isCaptchaCorrect
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -96,6 +97,17 @@ class RegisterBeforeVerify(generics.CreateAPIView):
         try:
             old_user = QLUser.objects.get(phone_number=phone_number, udid=udid)
         except ObjectDoesNotExist:
+            """
+            检查waitinglist和waitedlist
+            """
+            if Waitinglist.objects.filter(number=phone_number).exists():
+                return Response({"status":3}, status=status.HTTP_200_OK)
+            if Waitinglist.objects.filter(partner=phone_number).exists():
+                if Waitinglist.objects.filter(partner=phone_number)[0].partner_verified == 1:
+                    return Response({"status":4}, status=status.HTTP_200_OK)
+            if Waitedlist.objects.filter(number=phone_number).exists():
+                if Waitedlist.objects.filter(number=phone_number)[0].verified==1:
+                    return Response({"status":5}, status=status.HTTP_200_OK)
             """
             开始发送验证码并将其插入数据表
             """
