@@ -164,7 +164,7 @@ class RegisterAndVerify(APIView):
                 return Response({"status":2}, status=status.HTTP_200_OK)
             if Waitedlist.objects.filter(number=phone_number).exists():
                 return Response({"status":3}, status=status.HTTP_200_OK)
-            if IsWaiting.objects.get(id=0).is_waiting:
+            if IsWaiting.objects.get(id=1).is_waiting:
                 Waitinglist.objects.create(number=phone_number, udid=udid)
                 return Response({"status":2}, status=status.HTTP_200_OK)
             else:
