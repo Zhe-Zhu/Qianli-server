@@ -136,14 +136,14 @@ def moveInUser(request, password, number):
             try:
                 candidate = Waitedlist.objects.get(number = user.number)
             except Waitedlist.DoesNotExist:
-                candidate = Waitedlist(number = user.number, verified = True)
+                candidate = Waitedlist(number = user.number, udid = user.udid, verified = True)
                 candidate.save()
             #user = Waitinglist.objects.get(number = user_list[i])
             if user.partner != "":
                 try:
                     partnr = Waitedlist.objects.get(number = user.partner)
                 except Waitedlist.DoesNotExist:
-                    partnr = Waitedlist(number = user.partner, verified = user.partner_verified)
+                    partnr = Waitedlist(number = user.partner, udid = user.partner_udid, verified = user.partner_verified)
                     partnr.save()
             user.delete()
                 
