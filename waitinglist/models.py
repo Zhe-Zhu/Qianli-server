@@ -25,4 +25,4 @@ class IsWaiting(models.Model):
     is_waiting = models.NullBooleanField(default=False)
 
     def __unicode__(self):
-        return self.is_waiting
+        return self.str(is_waiting)
