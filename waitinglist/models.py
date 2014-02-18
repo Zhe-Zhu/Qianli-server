@@ -20,3 +20,9 @@ class Waitedlist(models.Model):
     
     def __unicode__(self):
         return self.number
+
+class IsWaiting(models.Model):
+    is_waiting = models.NullBooleanField(default=False)
+
+    def __unicode__(self):
+        return self.is_waiting

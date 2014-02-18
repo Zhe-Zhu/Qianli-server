@@ -3,7 +3,7 @@
 
 from qluser.models import QLUser, QLUserInformationUpdate
 from qluser.serializers import QLUserSerializer, QLUserSerializerAfterRegister, QLUserInformationUpdateSerializer
-from waitinglist.models import Waitinglist, Waitedlist
+from waitinglist.models import Waitinglist, Waitedlist, IsWaiting
 from captcha.views import sendCaptchaAndUpdateDB, isCaptchaCorrect
 from rest_framework import generics
 from rest_framework.views import APIView
@@ -159,28 +159,37 @@ class RegisterAndVerify(APIView):
         country_code = phone_number[0:4]
         pure_phone_number = phone_number[4:]
         if isCaptchaCorrect(pure_phone_number, country_code, captcha):
-            # 验证成功将用户记录插入数据库
-            try:
-                # 清理旧记录
-                QLUser.objects.get(phone_number=phone_number).delete()
-            except ObjectDoesNotExist:
-                pass
-            try:
-                # 必须分开清理,否则如果出现异常则不执行下面一条了
-                QLUser.objects.get(udid=udid).delete()
-            except ObjectDoesNotExist:
-                pass
-            serializer = QLUserSerializer(data=request.DATA)
-            if serializer.is_valid():
-                obj = serializer.save()
-                # 将旧记录删除并将记录插入已有的数据库中,让SIP服务器可以接受用户登录.
-                # self.register_sip_server(obj)
-                register_sip_server(obj)
-                # 将该用户插入信息更新记录表
-                self.insert_into_user_information_update(obj)
-                return Response({"status":1}, status=status.HTTP_201_CREATED)
+            # 查看是否在waited list或waiting list的partner里
+            if Waitinglist.objects.filter(partner=phone_number).exists():
+                return Response({"status":2}, status=status.HTTP_200_OK)
+            if Waitedlist.objects.filter(number=phone_number).exists():
+                return Response({"status":3}, status=status.HTTP_200_OK)
+            if IsWaiting.objects.get(id=0).is_waiting:
+                Waitinglist.objects.create(number=phone_number, udid=udid)
+                return Response({"status":2}, status=status.HTTP_200_OK)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # 验证成功将用户记录插入数据库
+                try:
+                    # 清理旧记录
+                    QLUser.objects.get(phone_number=phone_number).delete()
+                except ObjectDoesNotExist:
+                    pass
+                try:
+                    # 必须分开清理,否则如果出现异常则不执行下面一条了
+                    QLUser.objects.get(udid=udid).delete()
+                except ObjectDoesNotExist:
+                    pass
+                serializer = QLUserSerializer(data=request.DATA)
+                if serializer.is_valid():
+                    obj = serializer.save()
+                    # 将旧记录删除并将记录插入已有的数据库中,让SIP服务器可以接受用户登录.
+                    # self.register_sip_server(obj)
+                    register_sip_server(obj)
+                    # 将该用户插入信息更新记录表
+                    self.insert_into_user_information_update(obj)
+                    return Response({"status":1}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"status":0}, status=status.HTTP_200_OK)
         
