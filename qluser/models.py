@@ -115,7 +115,7 @@ class QLUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         '邮件地址', max_length=254, null=True, blank=True)
     name = models.CharField('昵称', max_length=120)
-    os_type = models.CharField('系统类型', max_length=20
+    os_type = models.CharField('系统类型', max_length=20, default="i"
     )
 
     # 头像文件名应用udid来命名,保证唯一性
