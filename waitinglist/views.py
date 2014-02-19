@@ -84,6 +84,7 @@ def checkWaitingStatus(request, number):
             user.delete()
             response_data['result'] = 1
             response_data['num'] = number
+            response_data['behind'] = Waitinglist.objects.count()
             #TODO: add number to official user list
             # 验证成功将用户记录插入数据库
             try:
