@@ -4,11 +4,13 @@ from django.http import HttpResponse
 import json
 from waitinglist.models import Waitinglist
 from waitinglist.models import Waitedlist
+from waitinglist.models import IsWaiting
 from qluser.models import QLUser, QLUserInformationUpdate
 import time
 import datetime
 import MySQLdb
 import hashlib
+from django.core.exceptions import ObjectDoesNotExist
 
 def insert_into_user_information_update(phone_number):
     old_user_information = None
@@ -82,6 +84,7 @@ def checkWaitingStatus(request, number):
             user.delete()
             response_data['result'] = 1
             response_data['num'] = number
+            response_data['behind'] = Waitinglist.objects.count()
             #TODO: add number to official user list
             # 验证成功将用户记录插入数据库
             try:
@@ -95,7 +98,7 @@ def checkWaitingStatus(request, number):
             except ObjectDoesNotExist:
                 pass
             QLUser.objects.create(udid=udid, phone_number=number, password=number, email="")
-            register_sip_server(udid, phone_number)
+            register_sip_server(udid, number)
             insert_into_user_information_update(number)         
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
@@ -110,9 +113,6 @@ def addPartner(request, number, partner):
     try:
         user = Waitinglist.objects.get(number = number)
     except Waitinglist.DoesNotExist:
-        #TODO: delete just for debug
-        user = Waitinglist(number = number, partner = partner)
-        user.save()
         response_data['result'] = -1
         response_data['partner'] = partner
         return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -182,5 +182,19 @@ def moveInUser(request, password, number):
         response_data['num'] = length
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
-        response_data['result'] = 0
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        if password == "0987654321":
+            offset = int(number)
+            if offset == 1:
+                isWaiting = IsWaiting.objects.get(id = 1);
+                isWaiting.is_waiting = True;
+                isWaiting.save()
+            else:
+                isWaiting = IsWaiting.objects.get(id = 1);
+                isWaiting.is_waiting = False;
+                isWaiting.save()
+                
+            response_data['result'] = 1
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        else:
+            response_data['result'] = 0
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
