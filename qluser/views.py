@@ -161,8 +161,12 @@ class RegisterAndVerify(APIView):
         if isCaptchaCorrect(pure_phone_number, country_code, captcha):
             # 查看是否在waited list或waiting list的partner里
             if Waitinglist.objects.filter(partner=phone_number).exists():
+                Waitinglist.objects.filter(partner=phone_number)[0].partner_udid = udid
+                Waitinglist.objects.filter(partner=phone_number)[0].save()
                 return Response({"status":4}, status=status.HTTP_200_OK)
             if Waitedlist.objects.filter(number=phone_number).exists():
+                Waitedlist.objects.filter(number=phone_number)[0].udid = udid
+                Waitedlist.objects.filter(number=phone_number)[0].save()
                 return Response({"status":3}, status=status.HTTP_200_OK)
             if IsWaiting.objects.get(id=1).is_waiting:
                 Waitinglist.objects.create(number=phone_number, udid=udid)
