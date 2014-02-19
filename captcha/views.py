@@ -41,7 +41,7 @@ def sendCaptcha(country_code, phone_number, captcha):
         #TODO 支持国际短信平台发送
         sendCaptchaOnLuosimao(phone_number, captcha)
 
-def sendCaptchaByVoice(phone_number, captcha):
+def sendCaptchaByYunTongXun(phone_number, captcha):
     now = datetime.datetime.now()
     timeStamp = now.strftime("%Y%m%d%H%M%S")
 
@@ -154,6 +154,22 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     # phone_captcha.delete()
     # 不删除, 首先删除与否对验证无影响, 其次防止后续操作错误时, 验证码不会被更换
     return True
+
+
+class sendCaptchaByVoice(APIView):
+    """
+    通过语音来发送验证码
+    """
+    def post(self, request, format=None):
+        phone_number = request.DATA['phone_number']
+        country_code = request.DATA['country_code']
+        # 查看数据库，如果没有该验证码则不发送
+        try:
+            phone_captcha = Captcha.objects.get(country_code=country_code,phone_number=phone_number)
+        except ObjectDoesNotExist:
+            return Response({"status":0}, status=status.HTTP_200_OK)
+        sendCaptchaByYunTongXun(phone_number, phone_captcha.captcha)
+        return Response({"status":1}, status=status.HTTP_200_OK)
 
 class generateCaptcha(APIView):
     """
