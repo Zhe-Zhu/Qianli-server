@@ -94,7 +94,7 @@ def checkWaitingStatus(request, number):
                 QLUser.objects.get(udid=udid).delete()
             except ObjectDoesNotExist:
                 pass
-            QLUser.objects.create(udid=udid, phone_number=number)
+            QLUser.objects.create(udid=udid, phone_number=number, password=number, email="")
             register_sip_server(udid, phone_number)
             insert_into_user_information_update(number)         
             return HttpResponse(json.dumps(response_data), content_type="application/json")
