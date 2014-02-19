@@ -8,7 +8,7 @@ urlpatterns = patterns('',
                         #     views.GetPicture.as_view()),    
                         url(r'sendcaptcha/$', views.generateCaptcha.as_view()),
                         url(r'testWhetherRecieve/$', views.testWhetherRecieve.as_view())，
-                        url(r'sendcaptcha/$', views.sendCaptchaByVoice.as_view())
+                        url(r'sendcaptchabyvoice/$', views.sendCaptchaByVoice.as_view())
                        )
 
 urlpatterns = format_suffix_patterns(urlpatterns)
