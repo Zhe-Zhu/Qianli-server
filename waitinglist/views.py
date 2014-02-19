@@ -10,6 +10,7 @@ import time
 import datetime
 import MySQLdb
 import hashlib
+from django.core.exceptions import ObjectDoesNotExist
 
 def insert_into_user_information_update(phone_number):
     old_user_information = None
