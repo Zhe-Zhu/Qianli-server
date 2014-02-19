@@ -71,12 +71,14 @@ def checkWaitingStatus(request, number):
                 ind = user_list.index(waiting_user.id)
                 response_data['behind'] = len(user_list) - 1 - ind
                 response_data['before'] = ind
+                response_data['partner'] = waiting_user.number;
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
             user_list = list(Waitinglist.objects.values_list('id',flat=True))
             ind = user_list.index(waiting_user.id)
             response_data['behind'] = len(user_list) - 1 - ind
             response_data['before'] = ind
+            response_data['partner'] = waiting_user.partner;
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         if user.verified:
