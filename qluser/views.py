@@ -325,7 +325,7 @@ class QLUserLogout(APIView):
         old_user.save()
         return Response({"message": "already log out for user with number-%s" % (phone_number)}, status=status.HTTP_200_OK)
 
-class QLUserLogout(APIView):
+class QLUserDelete(APIView):
     """
     将用户删除, 需要进行的操作有:
     将isActive标志位置为0, 使得不会在其他用户的联系人中出现

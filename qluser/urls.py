@@ -20,7 +20,7 @@ urlpatterns = patterns('',
                        url(r'^logout/(?P<phone_number>[0-9]+)/$', views.QLUserLogout.as_view()),
                        url(r'(?i)avatar/(?P<uuid>[a-z0-9]+)/$', views.get_avatar),
                        url(r'(?i)avatar/(?P<uuid>[a-z0-9]+_large)/$', views.get_large_avatar),
-                       url(r'(?i)debug/delete/(?P<phone_number>[0-9]+)/$')
+                       url(r'(?i)debug/delete/(?P<phone_number>[0-9]+)/$', views.QLUserDelete.as_view())
                        )
 
 urlpatterns = format_suffix_patterns(urlpatterns)
