@@ -73,7 +73,7 @@ def sendCaptchaOnLuosimao(phone_number, captcha):
     auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
     data={
         "mobile": phone_number,
-        "message": ''.join([captcha, "[千里验证码]"])
+        "message": ''.join([captcha, "【千里验证码】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
 
