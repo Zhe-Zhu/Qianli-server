@@ -69,7 +69,7 @@ def checkWaitingStatus(request, number):
             else:
                 user_list = list(Waitinglist.objects.values_list('id',flat=True))
                 ind = user_list.index(waiting_user.id)
-                response_data['behind'] = len(user_list) - 1 - ind
+                response_data['behind'] = len(user_list) - 2 - ind
                 response_data['before'] = ind
                 response_data['partner'] = waiting_user.number;
                 response_data['verified'] = True;
@@ -77,7 +77,7 @@ def checkWaitingStatus(request, number):
         else:
             user_list = list(Waitinglist.objects.values_list('id',flat=True))
             ind = user_list.index(waiting_user.id)
-            response_data['behind'] = len(user_list) - 1 - ind
+            response_data['behind'] = len(user_list) - 2 - ind
             response_data['before'] = ind
             response_data['partner'] = waiting_user.partner;
             response_data['verified'] = waiting_user.partner_verified;
