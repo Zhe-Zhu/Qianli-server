@@ -173,6 +173,10 @@ class RegisterAndVerify(APIView):
                 waited.save()
                 return Response({"status":3}, status=status.HTTP_200_OK)
             if IsWaiting.objects.get(id=1).is_waiting:
+                try:
+                    Waitinglist.objects.get(number=phone_number).delete()
+                except ObjectDoesNotExist:
+                    pass
                 Waitinglist.objects.create(number=phone_number, udid=udid)
                 return Response({"status":2}, status=status.HTTP_200_OK)
             else:
