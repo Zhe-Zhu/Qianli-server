@@ -325,6 +325,20 @@ class QLUserLogout(APIView):
         old_user.save()
         return Response({"message": "already log out for user with number-%s" % (phone_number)}, status=status.HTTP_200_OK)
 
+class QLUserLogout(APIView):
+    """
+    将用户删除, 需要进行的操作有:
+    将isActive标志位置为0, 使得不会在其他用户的联系人中出现
+    update information, user information和sip server的信息均不删除, 因为重新注册时需要使用, 如果更换了手机则相应的记录也会在注册中删除并更新
+    """
+    def delete(self, request, phone_number, format=None):
+        try:
+            old_user = QLUser.objects.get(phone_number=phone_number)
+        except ObjectDoesNotExist:
+            return Response({"message": "Cannot find such user with the number-%s" % (phone_number)}, status=status.HTTP_400_BAD_REQUEST)
+        old_user.delete()
+        return Response({"message": "already delete user with number-%s" % (phone_number)}, status=status.HTTP_200_OK)
+
 class QLUserWhoIsActiveByPhoneNumber(APIView):
     """
     Check which phone number is activated in Qianli
