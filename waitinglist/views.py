@@ -162,11 +162,13 @@ def addPartner(request, number, partner):
 
 
 def sendEnterNotificationBySMS(phone_number):
+    # 目前只能发送国内的手机，默认前面为+86
+    phone_number = phone_number[4:]
     resp = requests.post(("https://sms-api.luosimao.com/v1/send.json"),
     auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
     data={
         "mobile": phone_number,
-        "message": ''.join(["恭喜您已经获得进入千里的资格了！", "【千里验证码】"])
+        "message": ''.join(["恭喜您已经获得进入千里的资格了！马上打开千里看看吧！", "【千里验证码】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
 
