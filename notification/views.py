@@ -182,8 +182,8 @@ def try_to_send_notification(notification_type, phone_number_sender, phone_numbe
 
     # 发送通知
     send_notification(token, aps)
-    tmr = TimerClass()
-    tmr.start()
+    #tmr = TimerClass()
+    #tmr.start()
     return Response({"message": "send notification."}, status=status.HTTP_200_OK)    
 
 class SendNotification(APIView):
