@@ -11,7 +11,7 @@ import datetime
 import MySQLdb
 import hashlib
 import json
-import request
+import requests
 from django.core.exceptions import ObjectDoesNotExist
 
 def insert_into_user_information_update(phone_number):
