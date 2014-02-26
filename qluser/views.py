@@ -322,7 +322,8 @@ class QLUserLogout(APIView):
         except ObjectDoesNotExist:
             return Response({"message": "Cannot find such user with the number-%s" % (phone_number)}, status=status.HTTP_400_BAD_REQUEST)
         old_user.is_active = False
-        old_user.save()
+        old_user.delete()
+        #old_user.save()
         return Response({"message": "already log out for user with number-%s" % (phone_number)}, status=status.HTTP_200_OK)
 
 class QLUserDelete(APIView):
