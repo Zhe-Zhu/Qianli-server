@@ -10,6 +10,8 @@ import time
 import datetime
 import MySQLdb
 import hashlib
+import json
+import request
 from django.core.exceptions import ObjectDoesNotExist
 
 def insert_into_user_information_update(phone_number):
@@ -159,6 +161,16 @@ def addPartner(request, number, partner):
                 return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
+def sendEnterNotificationBySMS(phone_number):
+    resp = requests.post(("https://sms-api.luosimao.com/v1/send.json"),
+    auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
+    data={
+        "mobile": phone_number,
+        "message": ''.join(["恭喜您已经获得进入千里的资格了！", "【千里验证码】"])
+    },timeout=3 , verify=False);
+    result =  json.loads( resp.content )
+
+
 def moveInUser(request, password, number):
     response_data = {}
     if password == "1234567890":
@@ -172,6 +184,8 @@ def moveInUser(request, password, number):
             except Waitedlist.DoesNotExist:
                 candidate = Waitedlist(number = user.number, udid = user.udid, verified = True)
                 candidate.save()
+                # send SMS notification to user
+                sendEnterNotificationBySMS(user.number)
             #user = Waitinglist.objects.get(number = user_list[i])
             if user.partner != "":
                 try:
@@ -179,6 +193,7 @@ def moveInUser(request, password, number):
                 except Waitedlist.DoesNotExist:
                     partnr = Waitedlist(number = user.partner, udid = user.partner_udid, verified = user.partner_verified)
                     partnr.save()
+                    sendEnterNotificationBySMS(user.partner)
             user.delete()
                 
                 
