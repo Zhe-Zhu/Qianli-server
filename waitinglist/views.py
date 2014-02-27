@@ -240,7 +240,7 @@ def sendPushNotification(number):
     try:
         user = UserInfo.objects.get(name=number)
     except UserInfo.DoesNotExist:
-        response_data['result'] = 0
+        response_data['result'] = -1
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     token = user.token
     send_notification(token, aps)
