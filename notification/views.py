@@ -95,7 +95,7 @@ def send_notification(token, aps):
        logger.debug("execute feedback service")
        feedbacktime.lastfeedback = datetime.datetime.now()
        feedbacktime.save()
-       feedback('com.ashstudio.qianliAdhocDistribution', async=True, callback=got_feedback)
+       feedback('com.ashstudio.qianli', async=True, callback=got_feedback)
 
 def got_feedback(tuples):
    logger = logging.getLogger(__name__)
