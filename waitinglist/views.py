@@ -2,9 +2,11 @@
 # Create your views here.
 from django.http import HttpResponse
 import json
+from notification.models import UserInfo
 from waitinglist.models import Waitinglist
 from waitinglist.models import Waitedlist
 from waitinglist.models import IsWaiting
+from notification.views import send_notification
 from qluser.models import QLUser, QLUserInformationUpdate
 import time
 import datetime
@@ -188,6 +190,9 @@ def moveInUser(request, password, number):
                 candidate.save()
                 # send SMS notification to user
                 sendEnterNotificationBySMS(user.number)
+                sendPushNotification(user.number)
+                
+            
             #user = Waitinglist.objects.get(number = user_list[i])
             if user.partner != "":
                 try:
@@ -196,6 +201,7 @@ def moveInUser(request, password, number):
                     partnr = Waitedlist(number = user.partner, udid = user.partner_udid, verified = user.partner_verified)
                     partnr.save()
                     sendEnterNotificationBySMS(user.partner)
+                    sendPushNotification(user.number)
             user.delete()
                 
                 
@@ -219,3 +225,22 @@ def moveInUser(request, password, number):
         else:
             response_data['result'] = 0
             return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+def sendPushNotification(number):
+    response_data = {}
+    aps = {'aps': {
+        'sound': 'default',
+        'badge': 1,
+        'alert': {
+            'loc-key':'YOURTURN',
+            'action-loc-key':'YOURTURNACTIONKY'
+        }}
+    }
+
+    try:
+        user = UserInfo.objects.get(name=number)
+    except UserInfo.DoesNotExist:
+        response_data['result'] = 0
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+    token = user.token
+    send_notification(token, aps)
