@@ -170,7 +170,7 @@ def sendEnterNotificationBySMS(phone_number):
     auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
     data={
         "mobile": phone_number,
-        "message": ''.join(["恭喜您已经获得进入千里的资格了！马上打开千里看看吧！", "【千里验证码】"])
+        "message": ''.join(["恭喜您已经获得进入千里的资格了！马上打开千里看看吧！", "【千里通知】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
 
