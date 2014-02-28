@@ -227,7 +227,7 @@ def moveInUser(request, password, number):
             return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 def sendPushNotification(number):
-    response_data = {}
+    #response_data = {}
     aps = {'aps': {
         'sound': 'default',
         'badge': 1,
@@ -240,7 +240,7 @@ def sendPushNotification(number):
     try:
         user = UserInfo.objects.get(name=number)
     except UserInfo.DoesNotExist:
-        response_data['result'] = -1
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        # response_data['result'] = -1
+        return #HttpResponse(json.dumps(response_data), content_type="application/json")
     token = user.token
     send_notification(token, aps)
