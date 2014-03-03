@@ -226,6 +226,23 @@ def moveInUser(request, password, number):
             response_data['result'] = 0
             return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+
+def addToWaitedlist(request):
+    json_data = json.loads(request.body)
+    response_data = {}
+    try:
+        candidate = Waitedlist.objects.get(number = json_data.number)
+    except Waitedlist.DoesNotExist:
+        candidate = Waitedlist(number = json_data.number, udid = json_data.udid, verified = True)
+        candidate.save()
+        # send SMS notification to user
+        sendEnterNotificationBySMS(user.number)
+        sendPushNotification(user.number)
+
+    response_data['result'] = 1
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
 def sendPushNotification(number):
     response_data = {}
     aps = {'aps': {

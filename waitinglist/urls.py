@@ -6,6 +6,7 @@ admin.autodiscover()
 from waitinglist.views import checkWaitingStatus
 from waitinglist.views import  addPartner
 from waitinglist.views import  moveInUser
+from waitinglist.views import  addToWaitedlist
 
 urlpatterns = patterns('',
                        # Examples:
@@ -16,4 +17,5 @@ urlpatterns = patterns('',
                        url(r'^waitingstatus/(\d+)/$', checkWaitingStatus),
                        url(r'^addpartner/(\d+)/(\d+)/$', addPartner),
                        url(r'^moveinuser/(\d+)/(\d+)/$', moveInUser),
+                       url(r'^addToWaitedlist/$', addToWaitedlist),
                        )   
