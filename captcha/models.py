@@ -16,3 +16,11 @@ class Captcha(models.Model):
     def __unicode__(self):
         return self.phone_number
 
+
+class Statistics(models.Model):
+    number_SMS = models.IntegerField(default=0)
+    number_AudioSMS = models.IntegerField(default=0)
+    notice_interval = models.IntegerField(default=1000)
+    
+    def __unicode__(self):
+        return str(self.number_SMS)

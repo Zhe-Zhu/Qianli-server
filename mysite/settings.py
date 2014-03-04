@@ -139,6 +139,18 @@ INSTALLED_APPS = (
     'waitinglist',
 )
 
+#email setting
+
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'localhost'
+SERVER_EMAIL = 'theashstudio@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'theashstudio@gmail.com'
+EMAIL_HOST_PASSWORD = 'Ash1008studiO;'
+
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.

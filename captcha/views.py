@@ -2,13 +2,16 @@
 # Create your views here.
 
 from captcha.models import Captcha
+from captcha.models import Statistics
 from rest_framework.views import APIView
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import utc
-
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from captcha.tests import sendCaptchaForTest
+from qluser.models import QLUser
 
 import random
 import datetime
@@ -66,6 +69,8 @@ def sendCaptchaByYunTongXun(phone_number, captcha):
     payload = {"appId":appId, "verifyCode":verifyCode, "playTimes":playTimes, "to":to}
 
     r = requests.post(url, data=json.dumps(payload), headers=headers, verify=False)
+    #added by LG
+    countNumberOfSMS(0,1)
 
 
 def sendCaptchaOnLuosimao(phone_number, captcha):
@@ -76,6 +81,8 @@ def sendCaptchaOnLuosimao(phone_number, captcha):
         "message": ''.join([captcha, "【千里验证码】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
+    #added by LG
+    countNumberOfSMS(1,0)
 
 def sendCaptchaOnBayou(phone_number, captcha):
     # 发送验证码
@@ -155,6 +162,31 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     # 不删除, 首先删除与否对验证无影响, 其次防止后续操作错误时, 验证码不会被更换
     return True
 
+def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
+    
+    try:
+        stats = Statistics.objects.get(id = 1)
+    except ObjectDoesNotExist:
+        stats = Statistics(id = 1, number_SMS = delta_SMS, number_AudioSMS = delta_Audio_SMS, notice_interval = 1000)
+        stats.save()
+    else:
+        num_SMS = stats.number_SMS + delta_SMS
+        num_AudioSMS = stats.number_AudioSMS + delta_Audio_SMS
+        notify_interval = stats.notice_interval
+        stats.number_SMS = num_SMS
+        stats.number_AudioSMS = num_AudioSMS
+        stats.save()
+            #if num_SMS % notify_interval == 0:
+            #sendEmailToDeveloper(num_SMS, num_AudioSMS)
+            #elif num_AudioSMS % notify_interval == 0:
+            #sendEmailToDeveloper(num_SMS, num_AudioSMS)
+
+def sendEmailToDeveloper(num_SMS, num_AudioSMS):
+    num_qluser = QLUser.objects.count()
+    message = "qianli server has sent %d SMS and %d Audio_SMS. The number of register user of qianli is %d" % (num_SMS, num_AudioSMS, num_qluser)
+    #send_mail('notice from qianli server', message, 'qianli@qianli.com', ['lt2010cuhk@gmail.com'], fail_silently = True)
+    msg = EmailMessage('notice from qinali server', message, to=['lt2010cuhk@gmail.com, cainholic@gmail.com, cxw1987@gmail.com'])
+    msg.send()
 
 class sendCaptchaByVoice(APIView):
     """
