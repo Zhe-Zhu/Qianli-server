@@ -227,19 +227,26 @@ def moveInUser(request, password, number):
             return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
-def addToWaitedlist(request):
-    json_data = json.loads(request.body)
+def addtowaitedlist(request, number):
+    #json_data = json.loads(request.body)
+    #json_data = {}
+    #json_data['number'] = "18682120348"
+    #json_data['udid'] = "erqewrqertqtqretqrqe"
+    #number = json_data['number']
+    #udid = json_data['udid']
     response_data = {}
-    try:
-        candidate = Waitedlist.objects.get(number = json_data.number)
-    except Waitedlist.DoesNotExist:
-        candidate = Waitedlist(number = json_data.number, udid = json_data.udid, verified = True)
-        candidate.save()
-        # send SMS notification to user
-        sendEnterNotificationBySMS(user.number)
-        sendPushNotification(user.number)
+        #try:
+        #candidate = Waitedlist.objects.get(number = number)
+        #except Waitedlist.DoesNotExist:
+        #candidate = Waitedlist(number = number, udid = udid, verified = True)
+        #candidate.save()
 
+    # send SMS notification to user
+    #sendEnterNotificationBySMS(number)
+    #sendPushNotification(number)
     response_data['result'] = 1
+    response_data['udid'] = "erqewrqertqtqretqrqe"
+    response_data['number'] = number
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
