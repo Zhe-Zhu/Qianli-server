@@ -12,6 +12,10 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from captcha.tests import sendCaptchaForTest
 from qluser.models import QLUser
+from multiprocessing import Pool
+from multiprocessing import Process
+import threading
+import thread
 
 import random
 import datetime
@@ -176,17 +180,49 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
         stats.number_SMS = num_SMS
         stats.number_AudioSMS = num_AudioSMS
         stats.save()
-            #if num_SMS % notify_interval == 0:
+        
+        #sendEnterWarningBySMS()
+        if num_SMS % notify_interval == 0:
+            SMSThread = threading.Thread(target=sendEmailToDeveloper)
+            SMSThread.start()
+            #SMSThread.join()
+        elif num_AudioSMS % notify_interval == 0:
+            Audio_SMSThread = threading.Thread(target=sendEmailToDeveloper)
+            Audio_SMSThread.start()
             #sendEmailToDeveloper(num_SMS, num_AudioSMS)
-            #elif num_AudioSMS % notify_interval == 0:
-            #sendEmailToDeveloper(num_SMS, num_AudioSMS)
+        else:
+            pass
 
-def sendEmailToDeveloper(num_SMS, num_AudioSMS):
+        if num_SMS % 8000 == 0:
+            MessageThread = threading.Thread(target=sendEnterWarningBySMS)
+            MessageThread.start()
+            #sendEnterNotificationBySMS
+
+def sendEmailToDeveloper():
+    stats = Statistics.objects.get(id = 1)
+    num_SMS = stats.number_SMS
+    num_AudioSMS = stats.number_AudioSMS
     num_qluser = QLUser.objects.count()
-    message = "qianli server has sent %d SMS and %d Audio_SMS. The number of register user of qianli is %d" % (num_SMS, num_AudioSMS, num_qluser)
-    #send_mail('notice from qianli server', message, 'qianli@qianli.com', ['lt2010cuhk@gmail.com'], fail_silently = True)
+    message = "qianli server has sent %d SMS and %d Audio_SMS.\n The number of registered users of qianli is %d" % (num_SMS, num_AudioSMS, num_qluser)
+    #cainholic@gmail.com, cxw1987@gmail.com
     msg = EmailMessage('notice from qinali server', message, to=['lt2010cuhk@gmail.com, cainholic@gmail.com, cxw1987@gmail.com'])
     msg.send()
+
+def sendEnterWarningBySMS():
+    # 目前只能发送国内的手机，默认前面为+86
+    phone_number = "18664565400"
+    #stats = Statistics.objects.get(id = 1)
+    #num_SMS = stats.number_SMS
+    #num_AudioSMS = stats.number_AudioSMS
+    #message = " %d短信，%d语音短信。" % (num_SMS, num_AudioSMS)
+    resp = requests.post(("https://sms-api.luosimao.com/v1/send.json"),
+                         auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
+                         data={
+                         "mobile": phone_number,
+                         "message": ''.join(["需要购买短信" "【千里通知】"])
+                         },timeout=10 , verify=False);
+                         
+    result =  json.loads( resp.content )
 
 class sendCaptchaByVoice(APIView):
     """
@@ -242,3 +278,20 @@ class testWhetherRecieve(APIView):
     def get(self, request, format=None):
         number = request.DATA['number']
         return Response(number)
+
+
+class TimerClass(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.event = threading.Event()
+    
+    def run(self):
+        while not self.event.is_set():
+            print "do something"
+            # Get feedback messages
+            # for (token_hex, fail_time) in apns.feedback_server.items():
+            # do stuff with token_hex and fail_time
+            self.event.wait( 84600 )
+    
+    def stop(self):
+        self.event.set()

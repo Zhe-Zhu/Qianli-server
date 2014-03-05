@@ -267,18 +267,3 @@ def received_token(request):
     }
     return HttpResponse(simplejson.dumps(to_json), mimetype="application/json")
 
-class TimerClass(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.event = threading.Event()
-    
-    def run(self):
-        while not self.event.is_set():
-            print "do something"
-            # Get feedback messages
-            # for (token_hex, fail_time) in apns.feedback_server.items():
-               # do stuff with token_hex and fail_time
-            self.event.wait( 84600 )
-    
-    def stop(self):
-        self.event.set()
