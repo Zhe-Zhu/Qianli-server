@@ -1,11 +1,13 @@
 # coding=utf-8
 # Django settings for mysite project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-
+END_BROKEN_LINK_EMAILS = True
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+     ('LG', 'lt2010cuhk@gmail.com'),
+     ('cxw', 'cxw1987@gmail.com'),
+     ('zz', 'cainholic@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -24,7 +26,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["qlcall.com","www.qlcall.com:8080","qlcall.com:8080","django:8080","112.124.36.134","115.28.209.97","www.google.com","v1.proxy-checks.com","localhost"]
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -141,6 +143,12 @@ INSTALLED_APPS = (
 
 #email setting
 
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 25
+#EMAIL_HOST_USER = 'qianli@qianli.com'
+#EMAIL_HOST_PASSWORD = 'P@ssw0rd5'
+#EMAIL_USE_TLS = False
+
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = 'localhost'
@@ -156,12 +164,23 @@ EMAIL_HOST_PASSWORD = 'Ash1008studiO;'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+from django.core.exceptions import SuspiciousOperation
+
+def skip_suspicious_operations(record):
+    if record.exc_info:
+        exc_value = record.exc_info[1]
+        if isinstance(exc_value, SuspiciousOperation):
+            return False
+    return True
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
+           # '()': 'django.utils.log.RequireDebugFalse'
+		'()': 'django.utils.log.CallbackFilter',
+        	'callback': skip_suspicious_operations,
         }
     },
     'handlers': {
@@ -177,6 +196,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+	'django.security.DisallowedHost': {
+        	'handlers': ['null'],
+        	'propagate': False,
+   	 }
     }
 }
 
