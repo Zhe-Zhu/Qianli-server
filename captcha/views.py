@@ -82,7 +82,7 @@ def sendCaptchaOnLuosimao(phone_number, captcha):
     auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
     data={
         "mobile": phone_number,
-        "message": ''.join([captcha, "【千里验证码】"])
+        "message": ''.join(["您的千里验证码为: ", captcha, "【千里】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
     #added by LG
@@ -219,7 +219,7 @@ def sendEnterWarningBySMS():
                          auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
                          data={
                          "mobile": phone_number,
-                         "message": ''.join(["需要购买短信" "【千里通知】"])
+                         "message": ''.join(["需要购买短信" "【千里】"])
                          },timeout=10 , verify=False);
                          
     result =  json.loads( resp.content )
