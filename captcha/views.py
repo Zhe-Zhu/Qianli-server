@@ -154,7 +154,7 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     """
     # TODO: 记得删除, debug用
     #if captcha == "9999":
-    #   return True
+    #  return True
 
     try:
         phone_captcha = Captcha.objects.get(country_code=country_code, phone_number=phone_number, captcha=captcha)
@@ -183,20 +183,23 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
         
         #sendEnterWarningBySMS()
         if num_SMS % notify_interval == 0:
-            SMSThread = threading.Thread(target=sendEmailToDeveloper)
-            SMSThread.start()
-            #SMSThread.join()
+            if num_SMS > 0:
+                SMSThread = threading.Thread(target=sendEmailToDeveloper)
+                SMSThread.start()
+                #sendEmailToDeveloper()
+                #SMSThread.join()
         elif num_AudioSMS % notify_interval == 0:
-            Audio_SMSThread = threading.Thread(target=sendEmailToDeveloper)
-            Audio_SMSThread.start()
-            #sendEmailToDeveloper(num_SMS, num_AudioSMS)
+            if num_AudioSMS > 0:
+                Audio_SMSThread = threading.Thread(target=sendEmailToDeveloper)
+                Audio_SMSThread.start()
+                #sendEmailToDeveloper(num_SMS, num_AudioSMS)
         else:
             pass
 
         if num_SMS % 8000 == 0:
             MessageThread = threading.Thread(target=sendEnterWarningBySMS)
             MessageThread.start()
-            #sendEnterNotificationBySMS
+            #sendEnterNotificationBySMS()
 
 def sendEmailToDeveloper():
     stats = Statistics.objects.get(id = 1)
@@ -205,8 +208,14 @@ def sendEmailToDeveloper():
     num_qluser = QLUser.objects.count()
     message = "qianli server has sent %d SMS and %d Audio_SMS.\n The number of registered users of qianli is %d" % (num_SMS, num_AudioSMS, num_qluser)
     #cainholic@gmail.com, cxw1987@gmail.com
-    msg = EmailMessage('notice from qinali server', message, to=['lt2010cuhk@gmail.com, cainholic@gmail.com, cxw1987@gmail.com'])
+    msg = EmailMessage('notice from qinali server', message, to=['lt2010cuhk@gmail.com'])
     msg.send()
+
+    msg1 = EmailMessage('notice from qinali server', message, to=['cainholic@gmail.com'])
+    msg1.send()
+
+    msg2 = EmailMessage('notice from qinali server', message, to=['513690125@qq.com'])
+    msg2.send()
 
 def sendEnterWarningBySMS():
     # 目前只能发送国内的手机，默认前面为+86

@@ -15,8 +15,8 @@ from dialrecords.models import MissedCalls
 from qlfriend.models import QLFriend
 from qluser.models import QLUser
 
-from apns import APNs, Payload, PayloadAlert
-from pyapns import configure, provision, notify, feedback
+#from apns import APNs, Payload, PayloadAlert
+#from pyapns import configure, provision, notify, feedback
 
 from pprint import pprint
 import threading

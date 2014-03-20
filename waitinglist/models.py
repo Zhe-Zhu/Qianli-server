@@ -23,6 +23,6 @@ class Waitedlist(models.Model):
 
 class IsWaiting(models.Model):
     is_waiting = models.NullBooleanField(default=False)
-
+    
     def __unicode__(self):
         return str(self.is_waiting)
