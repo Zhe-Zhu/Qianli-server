@@ -82,7 +82,7 @@ def sendCaptchaOnLuosimao(phone_number, captcha):
     auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
     data={
         "mobile": phone_number,
-        "message": ''.join([captcha, "【千里验证码】"])
+        "message": ''.join(["您的千里验证码为: ", captcha, "【千里】"])
     },timeout=3 , verify=False);
     result =  json.loads( resp.content )
     #added by LG
@@ -153,8 +153,32 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     验证所输出的号码和验证码是否正确
     """
     # TODO: 记得删除, debug用
+<<<<<<< HEAD
     #if captcha == "9999":
     #  return True
+=======
+    if phone_number == "11111111111":
+        return True
+    elif phone_number == "22222222222":
+        return True
+    elif phone_number == "33333333333":
+        return True
+    elif phone_number == "44444444444":
+        return True
+    elif phone_number == "55555555555":
+        return True
+    elif phone_number == "66666666666":
+        return True
+    elif phone_number == "77777777777":
+        return True
+    elif phone_number == "88888888888":
+        return True
+    elif phone_number == "99999999999":
+        return True
+
+    if captcha == "9999":
+      return True
+>>>>>>> FETCH_HEAD
 
     try:
         phone_captcha = Captcha.objects.get(country_code=country_code, phone_number=phone_number, captcha=captcha)
@@ -186,7 +210,10 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
             if num_SMS > 0:
                 SMSThread = threading.Thread(target=sendEmailToDeveloper)
                 SMSThread.start()
+<<<<<<< HEAD
                 #sendEmailToDeveloper()
+=======
+>>>>>>> FETCH_HEAD
                 #SMSThread.join()
         elif num_AudioSMS % notify_interval == 0:
             if num_AudioSMS > 0:
@@ -197,9 +224,16 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
             pass
 
         if num_SMS % 8000 == 0:
+<<<<<<< HEAD
             MessageThread = threading.Thread(target=sendEnterWarningBySMS)
             MessageThread.start()
             #sendEnterNotificationBySMS()
+=======
+            if num_SMS > 0:
+                MessageThread = threading.Thread(target=sendEnterWarningBySMS)
+                MessageThread.start()
+                #sendEnterNotificationBySMS
+>>>>>>> FETCH_HEAD
 
 def sendEmailToDeveloper():
     stats = Statistics.objects.get(id = 1)
@@ -228,7 +262,7 @@ def sendEnterWarningBySMS():
                          auth=("api", "key-4dabcb730d5984d391d4a6bb5405e68f"),
                          data={
                          "mobile": phone_number,
-                         "message": ''.join(["需要购买短信" "【千里通知】"])
+                         "message": ''.join(["需要购买短信" "【千里】"])
                          },timeout=10 , verify=False);
                          
     result =  json.loads( resp.content )
