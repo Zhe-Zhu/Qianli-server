@@ -202,20 +202,23 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
         
         #sendEnterWarningBySMS()
         if num_SMS % notify_interval == 0:
-            SMSThread = threading.Thread(target=sendEmailToDeveloper)
-            SMSThread.start()
-            #SMSThread.join()
+            if num_SMS > 0:
+                SMSThread = threading.Thread(target=sendEmailToDeveloper)
+                SMSThread.start()
+                #SMSThread.join()
         elif num_AudioSMS % notify_interval == 0:
-            Audio_SMSThread = threading.Thread(target=sendEmailToDeveloper)
-            Audio_SMSThread.start()
-            #sendEmailToDeveloper(num_SMS, num_AudioSMS)
+            if num_AudioSMS > 0:
+                Audio_SMSThread = threading.Thread(target=sendEmailToDeveloper)
+                Audio_SMSThread.start()
+                #sendEmailToDeveloper(num_SMS, num_AudioSMS)
         else:
             pass
 
         if num_SMS % 8000 == 0:
-            MessageThread = threading.Thread(target=sendEnterWarningBySMS)
-            MessageThread.start()
-            #sendEnterNotificationBySMS
+            if num_SMS > 0:
+                MessageThread = threading.Thread(target=sendEnterWarningBySMS)
+                MessageThread.start()
+                #sendEnterNotificationBySMS
 
 def sendEmailToDeveloper():
     stats = Statistics.objects.get(id = 1)
