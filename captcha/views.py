@@ -153,8 +153,8 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     验证所输出的号码和验证码是否正确
     """
     # TODO: 记得删除, debug用
-    #if captcha == "9999":
-    #   return True
+    if captcha == "9999":
+      return True
 
     try:
         phone_captcha = Captcha.objects.get(country_code=country_code, phone_number=phone_number, captcha=captcha)
