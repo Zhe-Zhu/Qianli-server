@@ -17,6 +17,8 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 
+from django.core.cache import cache
+
 import os
 import re
 
@@ -160,3 +162,16 @@ def get_picture(request, uuid):
 
     image_data = open(image_name, "rb").read()
     return HttpResponse(image_data, mimetype=''.join(["image/", mimetype_ext]))
+
+
+def saveImageTomemcached(key, image_data):
+    cache.set(key, image_data, 20)
+
+def getImageFromcached(key):
+
+    image_data = cache.get(key)
+    cache.delete(key)
+    return image_data
+
+
+
