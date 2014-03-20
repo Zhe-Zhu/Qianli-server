@@ -26,11 +26,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-<<<<<<< HEAD
-ALLOWED_HOSTS = ['112.124.36.134']
-=======
 ALLOWED_HOSTS = ["qlcall.com","www.qlcall.com:8080","qlcall.com:8080","django:8080","112.124.36.134","115.28.209.97","www.google.com","v1.proxy-checks.com","localhost"]
->>>>>>> FETCH_HEAD
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -177,10 +173,7 @@ def skip_suspicious_operations(record):
             return False
     return True
 
-<<<<<<< HEAD
 
-=======
->>>>>>> FETCH_HEAD
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

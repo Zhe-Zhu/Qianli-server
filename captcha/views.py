@@ -153,10 +153,6 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     验证所输出的号码和验证码是否正确
     """
     # TODO: 记得删除, debug用
-<<<<<<< HEAD
-    #if captcha == "9999":
-    #  return True
-=======
     if phone_number == "11111111111":
         return True
     elif phone_number == "22222222222":
@@ -178,7 +174,6 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
 
     if captcha == "9999":
       return True
->>>>>>> FETCH_HEAD
 
     try:
         phone_captcha = Captcha.objects.get(country_code=country_code, phone_number=phone_number, captcha=captcha)
@@ -210,10 +205,6 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
             if num_SMS > 0:
                 SMSThread = threading.Thread(target=sendEmailToDeveloper)
                 SMSThread.start()
-<<<<<<< HEAD
-                #sendEmailToDeveloper()
-=======
->>>>>>> FETCH_HEAD
                 #SMSThread.join()
         elif num_AudioSMS % notify_interval == 0:
             if num_AudioSMS > 0:
@@ -224,16 +215,11 @@ def countNumberOfSMS(delta_SMS, delta_Audio_SMS):
             pass
 
         if num_SMS % 8000 == 0:
-<<<<<<< HEAD
-            MessageThread = threading.Thread(target=sendEnterWarningBySMS)
-            MessageThread.start()
-            #sendEnterNotificationBySMS()
-=======
             if num_SMS > 0:
                 MessageThread = threading.Thread(target=sendEnterWarningBySMS)
                 MessageThread.start()
                 #sendEnterNotificationBySMS
->>>>>>> FETCH_HEAD
+
 
 def sendEmailToDeveloper():
     stats = Statistics.objects.get(id = 1)
