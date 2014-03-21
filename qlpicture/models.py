@@ -71,6 +71,7 @@ class SessionPicture(models.Model):
     def save(self, *args, **kwargs):
         # 在把image存在硬盘前存入Memcache中
         image_data = self.picture.read()
+        # 命名原则： [session_id]:[index]
         image_key = self.session_id + ":" + str(self.index)
         cache.set(image_key, image_data, 20)
 
