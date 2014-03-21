@@ -7,6 +7,7 @@ from mysite import settings
 
 import uuid
 import os
+import random
 
 # Create your models here.
 
@@ -77,7 +78,9 @@ def get_path_avatar(instance, filename):
         filename = uuid.uuid1().hex
 
     filename_ext = filename + '.' + ext
-    return os.path.join(settings.MEDIA_ROOT, 'avatar', filename_ext)
+    # 随机生成一个文件夹名
+    second_directory_name = str(random.randint(1, 100))    
+    return os.path.join(settings.MEDIA_ROOT, 'avatar', second_directory_name, filename_ext)
 
 def get_path_large_avatar(instance, filename):
     """
@@ -101,7 +104,9 @@ def get_path_large_avatar(instance, filename):
         filename = uuid.uuid1().hex + '_large'
 
     filename_ext = filename + '.' + ext
-    return os.path.join(settings.MEDIA_ROOT, 'avatar', filename_ext)
+    # 随机生成一个文件夹名
+    second_directory_name = str(random.randint(1, 100))    
+    return os.path.join(settings.MEDIA_ROOT, 'avatar', second_directory_name, filename_ext)
 
 class QLUser(AbstractBaseUser, PermissionsMixin):
     """在原Django抽象用户类的基础上添加了我们需要记录的信息,如udid等"""
