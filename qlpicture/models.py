@@ -6,6 +6,7 @@ TalkPicture - 用以接受用户发送的图片,从而实现通话过程中的�
 """
 
 from django.db import models
+from django.core.cache import cache
 from mysite import settings
 
 import uuid
@@ -60,6 +61,15 @@ class SessionPicture(models.Model):
 
     def __unicode__(self):
         return ''.join([str(self.session_id),'+',str(self.index),'+',self.picture.name])
+
+    def save(self, *args, **kwargs):
+        # 在把image存在硬盘前存入Memcache中
+        image_data = self.picture.read()
+        image_key = self.session_id + ":" + str(self.index)
+        cache.set(image_key, image_data, 20)
+
+        super(SessionPicture, self).save(*args, **kwargs)
+
 
 class SessionPictureInformation(models.Model):
     """存储用户在对话中发送的图片的信息,如当前图片总数等,根据方案1进行了改进"""

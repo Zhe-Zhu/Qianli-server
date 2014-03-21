@@ -105,8 +105,18 @@ def get_picture_by_session_id_and_index(request, session_id, index):
         return Response({'error': 'Format of index is not correct.'}, status=status.HTTP_400_BAD_REQUEST)
     # TODO 验证session_id
 
+    # 先尝试从memcache里面拿图片数据
+    image_key = session_id + ":" + str(index)
+    image_data = getImageFromcached(image_key)
+    if image_data:
+        return HttpResponse(image_data, mimetype="image/jpeg,image/png")
+
     # 得到图片的地址
-    current_session = SessionPicture.objects.get(session_id=session_id, index=index)
+    try:
+        current_session = SessionPicture.objects.get(session_id=session_id, index=index)
+    except ObjectDoesNotExist:
+        return Response({'error': 'No such picture information.'},
+                            status=status.HTTP_404_NOT_FOUND)        
     picture = str(current_session.picture)
     if os.path.isfile(picture):
         image_data = open(picture, "rb").read()
@@ -115,7 +125,7 @@ def get_picture_by_session_id_and_index(request, session_id, index):
             suffix = "jpeg"
         mimetype = ''.join(["image/", suffix])
         return HttpResponse(image_data, mimetype=mimetype)
-    return Response({'error': 'No such picture'},
+    return Response({'error': 'No such picture.'},
                             status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['DELETE'])
@@ -165,10 +175,10 @@ def get_picture(request, uuid):
 
 
 def saveImageTomemcached(key, image_data):
+    # key命名原则： [session_id]:[index]
     cache.set(key, image_data, 20)
 
 def getImageFromcached(key):
-
     image_data = cache.get(key)
     cache.delete(key)
     return image_data
