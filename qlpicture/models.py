@@ -75,7 +75,7 @@ class SessionPicture(models.Model):
         image_key = self.session_id + ":" + str(self.index)
         cache.set(image_key, image_data, 20)
 
-        super(SessionPicture, self).save(*args, **kwargs) 
+        super(SessionPicture, self).save(*args, **kwargs)
 
 
 class SessionPictureInformation(models.Model):
