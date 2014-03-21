@@ -10,6 +10,8 @@ from mysite import settings
 
 import uuid
 import os
+import time
+import random
 
 # Create your models here.
 
@@ -23,7 +25,11 @@ def get_path(instance, filename):
         ext = ''
     # 随机生成文件名
     filename = uuid.uuid1().hex + '.' + ext
-    return os.path.join(settings.MEDIA_ROOT, 'picture', filename)
+    # 根据当前日期生成文件夹名
+    directory_name = time.strftime('%Y%m%d',time.localtime(time.time()))
+    # 随机生成一个文件夹名
+    second_directory_name = str(random.randint(1, 50))
+    return os.path.join(settings.MEDIA_ROOT, 'picture', directory_name, second_directory_name, filename)
 
 class TalkPicture(models.Model):
     """临时存储用户在对话时发送的图片"""
