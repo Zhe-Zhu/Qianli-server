@@ -200,6 +200,19 @@ LOGGING = {
     }
 }
 
+# 设置memcache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+#       'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 2000,
+            'CULL_FREQUENCY':200
+        }
+    }
+}
+
 # 要求所有url结尾都必须为/
 APPEND_SLASH = True
 
