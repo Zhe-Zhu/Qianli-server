@@ -152,28 +152,8 @@ def isCaptchaCorrect(phone_number, country_code, captcha):
     """
     验证所输出的号码和验证码是否正确
     """
-    # TODO: 记得删除, debug用
-    if phone_number == "11111111111":
-        return True
-    elif phone_number == "22222222222":
-        return True
-    elif phone_number == "33333333333":
-        return True
-    elif phone_number == "44444444444":
-        return True
-    elif phone_number == "55555555555":
-        return True
-    elif phone_number == "66666666666":
-        return True
-    elif phone_number == "77777777777":
-        return True
-    elif phone_number == "88888888888":
-        return True
-    elif phone_number == "99999999999":
-        return True
-
-    if captcha == "9999":
-      return True
+    # if captcha == "9999":
+    #   return True
 
     try:
         phone_captcha = Captcha.objects.get(country_code=country_code, phone_number=phone_number, captcha=captcha)
