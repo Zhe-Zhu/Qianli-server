@@ -134,8 +134,12 @@ def try_to_send_notification(notification_type, phone_number_sender, phone_numbe
     try:
         friend = QLFriend.objects.get(user_number=phone_number_receiver, friend_number=phone_number_sender)
     except QLFriend.DoesNotExist:
-        sender_profile = QLUser.objects.get(phone_number=phone_number_sender)
-        sender_name = sender_profile.name
+        try:
+            sender_profile = QLUser.objects.get(phone_number=phone_number_sender)
+        except QLUser.DoesNotExist:
+            sender_name = None
+        else:
+            sender_name = sender_profile.name
         if sender_name is None:
             sender_name = phone_number_sender
     else:
