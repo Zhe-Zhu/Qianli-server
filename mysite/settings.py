@@ -173,6 +173,7 @@ def skip_suspicious_operations(record):
             return False
     return True
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -195,11 +196,20 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
-        },
-	'django.security.DisallowedHost': {
-        	'handlers': ['null'],
-        	'propagate': False,
-   	 }
+        }
+    }
+}
+
+# 设置memcache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+#       'TIMEOUT': 60,
+        'OPTIONS': {
+            'MAX_ENTRIES': 2000,
+            'CULL_FREQUENCY':200
+        }
     }
 }
 

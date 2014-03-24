@@ -6,10 +6,13 @@ TalkPicture - 用以接受用户发送的图片,从而实现通话过程中的�
 """
 
 from django.db import models
+from django.core.cache import cache
 from mysite import settings
 
 import uuid
 import os
+import time
+import random
 
 # Create your models here.
 
@@ -23,7 +26,11 @@ def get_path(instance, filename):
         ext = ''
     # 随机生成文件名
     filename = uuid.uuid1().hex + '.' + ext
-    return os.path.join(settings.MEDIA_ROOT, 'picture', filename)
+    # 根据当前日期生成文件夹名
+    directory_name = time.strftime('%Y%m%d',time.localtime(time.time()))
+    # 随机生成一个文件夹名
+    second_directory_name = str(random.randint(1, 50))
+    return os.path.join(settings.MEDIA_ROOT, 'picture', directory_name, second_directory_name, filename)
 
 class TalkPicture(models.Model):
     """临时存储用户在对话时发送的图片"""
@@ -60,6 +67,16 @@ class SessionPicture(models.Model):
 
     def __unicode__(self):
         return ''.join([str(self.session_id),'+',str(self.index),'+',self.picture.name])
+
+    def save(self, *args, **kwargs):
+        # 在把image存在硬盘前存入Memcache中
+        image_data = self.picture.read()
+        # 命名原则： [session_id]:[index]
+        image_key = self.session_id + ":" + str(self.index)
+        cache.set(image_key, image_data, 20)
+
+        super(SessionPicture, self).save(*args, **kwargs)
+
 
 class SessionPictureInformation(models.Model):
     """存储用户在对话中发送的图片的信息,如当前图片总数等,根据方案1进行了改进"""

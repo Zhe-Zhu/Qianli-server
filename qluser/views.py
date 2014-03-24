@@ -13,6 +13,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from mysite import settings
 from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
+from django.utils import simplejson 
 
 import MySQLdb
 import hashlib
@@ -261,6 +263,36 @@ class QLUserDetailsByPhoneNumber(generics.RetrieveUpdateAPIView):
     serializer_class = QLUserSerializerAfterRegister
     lookup_field = 'phone_number'
 
+    def get(self, request, phone_number, format=None):
+        try:
+            user = QLUser.objects.get(phone_number=phone_number)
+        except ObjectDoesNotExist:
+            return HttpResponse("no such user.")
+        if user.avatar:
+            avatar = user.avatar.url
+            #修改格式
+            real_avatar_array = avatar.split('/')
+            try:
+                avatar = real_avatar_array[0] + "/" +real_avatar_array[1] + "_" +real_avatar_array[2]            
+            except IndexError:
+                pass
+        else:
+            avatar = ""
+
+        if user.large_avatar:
+            large_avatar = user.large_avatar.url
+            #修改格式
+            real_large_avatar_array = large_avatar.split('/')
+            try:
+                large_avatar = real_large_avatar_array[0] + "/" +real_large_avatar_array[1] + "_" +real_large_avatar_array[2] 
+            except IndexError:
+                pass
+        else:
+            large_avatar = ""
+
+        user_details = {"udid":user.udid, "name":user.name, "phone_number":user.phone_number, "email":user.email, "os_type":user.os_type, "avatar":avatar, "large_avatar":large_avatar}
+        return HttpResponse(simplejson.dumps(user_details,ensure_ascii = False),mimetype="application/json")
+
     def insert_into_user_information_update(self, obj):
         old_user_information = None
         try:
@@ -298,6 +330,23 @@ class QLUserDetailsByPhoneNumber(generics.RetrieveUpdateAPIView):
         if user_information.update_time>3000:
             user_information.update_time = 0
         user_information.save()
+
+    # def get_object(self):
+    #     queryset = self.get_queryset()
+    #     filter = {}
+    #     filter['phone_number'] = self.kwargs['phone_number']
+    #     obj = get_object_or_404(queryset, **filter)
+
+    #     # 修改avatar地址
+    #     if obj.avatar:
+    #         real_avatar_array = obj.avatar.url.split('/')
+    #         obj.avatar = real_avatar_array[0] + "/" +real_avatar_array[1] + "_" +real_avatar_array[2]
+
+    #     # 修改large avatar地址
+    #     if obj.large_avatar:
+    #         real_large_avatar_array = obj.large_avatar.url.split('/')
+    #         obj.large_avatar = real_large_avatar_array[0] + "/" +real_large_avatar_array[1] + "_" +real_large_avatar_array[2]        
+    #     return obj
 
 class QLUserDetailsByEmail(generics.RetrieveAPIView):
     queryset = QLUser.objects.all()
@@ -377,13 +426,24 @@ class QLUserWhoIsActiveByPhoneNumber(APIView):
 def get_avatar(request, uuid):
     """根据提供的uuid来获取相应的图片"""
     directory = os.path.join(settings.MEDIA_ROOT, 'avatar/')
+
+    # 兼顾和旧版本的兼容性
+    if len(uuid) == 32:
+        filename = ''
+    else:
+    # 提取出真正的地址
+        real_avatar_array = uuid.split('_')
+        filename = real_avatar_array[0] + '/'
+        uuid = real_avatar_array[1]
+
     # 验证uuid有效性,必须是32个字母或数字的组合
     pattern = re.compile(r'^[a-z0-9]{32}$')
     if not pattern.match(uuid):
         return Response({'error': 'Format of uuid is not correct'},
                         status=status.HTTP_400_BAD_REQUEST)
+
     # 验证文件是否存在
-    image_name = directory + uuid
+    image_name = directory + filename + uuid
     if os.path.isfile(image_name + ".jpg"):
         # image_name += ".jpg"
         # 采用join方法,效率更高,不需要新建字符串对象
@@ -409,13 +469,23 @@ def get_avatar(request, uuid):
 def get_large_avatar(request, uuid):
     """根据提供的uuid来获取相应的图片"""
     directory = os.path.join(settings.MEDIA_ROOT, 'avatar/')
+
+    # 兼顾旧版本
+    if len(uuid) == 32 + len("_large"):
+        filename = ''
+    else:
+        # 提取出真正的地址
+        real_large_avatar_array = uuid.split('_')
+        filename = real_large_avatar_array[0] + '/'
+        uuid = real_large_avatar_array[1] + "_large"
+
     # 验证uuid有效性,必须是32个字母或数字的组合
     pattern = re.compile(r'^[a-z0-9]{32}_large$')
     if not pattern.match(uuid):
         return Response({'error': 'Format of uuid is not correct'},
                         status=status.HTTP_400_BAD_REQUEST)
     # 验证文件是否存在
-    image_name = directory + uuid
+    image_name = directory + filename + uuid
     if os.path.isfile(image_name + ".jpg"):
         # image_name += ".jpg"
         # 采用join方法,效率更高,不需要新建字符串对象
@@ -431,8 +501,40 @@ def get_large_avatar(request, uuid):
         elif os.path.isfile(image_name):
             mimetype_ext = 'png'
         else:
-            return Response({'error': 'No such picture ' + image_name},
+            return Response({'error': 'No such large avatar ' + image_name},
                             status=status.HTTP_404_NOT_FOUND)
 
     image_data = open(image_name, "rb").read()
     return HttpResponse(image_data, mimetype=''.join(["image/", mimetype_ext]))
+
+
+class QLUserByPhoneNumber(APIView):
+    def get(self, request, phone_number, format=None):
+        try:
+            user = QLUser.objects.get(phone_number=phone_number)
+        except ObjectDoesNotExist:
+            return HttpResponse("no such user.")
+        if user.avatar:
+            avatar = user.avatar.url
+            #修改格式
+            real_avatar_array = avatar.split('/')
+            try:
+                avatar = real_avatar_array[0] + "/" +real_avatar_array[1] + "_" +real_avatar_array[2]            
+            except IndexError:
+                pass
+        else:
+            avatar = ""
+
+        if user.large_avatar:
+            large_avatar = user.large_avatar.url
+            #修改格式
+            real_large_avatar_array = large_avatar.split('/')
+            try:
+                large_avatar = real_large_avatar_array[0] + "/" +real_large_avatar_array[1] + "_" +real_large_avatar_array[2] 
+            except IndexError:
+                pass
+        else:
+            large_avatar = ""
+
+        user_details = {"udid":user.udid, "name":user.name, "phone_number":user.phone_number, "email":user.email, "os_type":user.os_type, "avatar":avatar, "large_avatar":large_avatar}
+        return HttpResponse(simplejson.dumps(user_details,ensure_ascii = False))      
