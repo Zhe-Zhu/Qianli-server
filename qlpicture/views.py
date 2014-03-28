@@ -68,6 +68,7 @@ class RegisterSessionId(APIView):
         # 清理旧的信息
         SessionPictureInformation.objects.get(session_id=session_id).delete()
         SessionPictureInformation.objects.create(session_id=session_id, maximum_index=0)
+        SessionPicture.objects.filter(session_id=session_id).delete()
         return Response({"session_id":session_id}, status=status.HTTP_200_OK)        
 
 @api_view(['POST'])

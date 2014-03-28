@@ -45,6 +45,19 @@ def register_sip_server(obj):
     cur.close()
     db.close()
 
+def logout_sip_server(phone_number):
+    """
+    把Sip server中相应用户的记录删除
+    """
+    db = MySQLdb.connect(host="localhost",
+                         user="openser",
+                         passwd="openserrw",
+                         db="openser")
+    cur = db.cursor()    
+    number_row = cur.execute("DELETE FROM subscriber WHERE username="+"'"+phone_number+"'")
+    db.commit()
+    cur.close()
+    db.close()
 
 class Register(generics.CreateAPIView):
     queryset = QLUser.objects.all()
@@ -373,6 +386,10 @@ class QLUserLogout(APIView):
         old_user.is_active = False
         old_user.delete()
         #old_user.save()
+
+        # 清理sip server中的数据
+        logout_sip_server(phone_number)
+        
         return Response({"message": "already log out for user with number-%s" % (phone_number)}, status=status.HTTP_200_OK)
 
 class QLUserDelete(APIView):
